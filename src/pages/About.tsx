@@ -96,7 +96,7 @@ const AboutUs: React.FC = () => {
                     <img src={logo} alt="Vabit Digify Media Logo" className={styles.logoImage} />
                   </div>
                   <a 
-                    href="https://vabitdigify.com" 
+                    href="https://vabitdigifymedia.com/" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className={styles.companyLink}
