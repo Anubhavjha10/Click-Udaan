@@ -23,12 +23,12 @@ const Footer = () => {
         <div className="footer-links-group">
           <h4 className="footer-heading">Services</h4>
           <ul className="footer-links">
-            <li><a href="#services">Social Media Marketing</a></li>
-            <li><a href="#services">Google & Meta Ads</a></li>
-            <li><a href="#services">Lead Generation</a></li>
-            <li><a href="#services">Branding</a></li>
-            <li><a href="#services">Website Development</a></li>
-            <li><Link to="/verify">Verify Certificate</Link></li>
+            <li><Link to="/pages/services/social-media">Social Media Marketing</Link></li>
+            <li><Link to="/pages/services/meta-ads">Meta Ads</Link></li>
+            <li><Link to="/pages/services/seo">SEO</Link></li>
+            <li><Link to="/pages/services/graphic-designing">Graphic Designing</Link></li>
+            <li><Link to="/pages/services/web-dev">Website Development</Link></li>
+            <li><Link to="/pages/services/whatsapp-bulk-marketing">WhatsApp Bulk Marketing</Link></li>
           </ul>
         </div>
 
@@ -51,9 +51,11 @@ const Footer = () => {
         <div className="footer-links-group">
           <h4 className="footer-heading">Contact</h4>
           <ul className="footer-links">
-            <li>📧 hello@clickudaan.com</li>
-            <li>📞 +91 85060 95853</li>
-            <li>📍 Iconic Tower, Sector- 63, Noida, UP, India</li>
+            <a href="mailto:hello@clickudaan.com">📧 hello@clickudaan.com</a>
+            {/* <li>📞 +91 85060 95853</li> */}
+            <a href="tel:+918506095853">📞 +91 85060 95853</a>
+            <a href="https://maps.app.goo.gl/aNkYHFFp9rypmerc7" target='_blank'>📍 Iconic Tower, Sector- 63, Noida, UP, India</a>
+            {/* <li>📍 Iconic Tower, Sector- 63, Noida, UP, India</li> */}
           </ul>
         </div>
       </div>
