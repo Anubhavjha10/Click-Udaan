@@ -15,6 +15,7 @@ import WhatsIcon from '../../assets/whatsapp.png';
 import VideoIcon from '../../assets/video-edit.png';
 import GraphicIcon from '../../assets/Graphic-design.png';
 import UGCIcon from '../../assets/ugc.png';
+import myLogo from "../../assets/my-logo.png"
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -61,7 +62,7 @@ const Navbar = () => {
           onClick={() => handleNavClick('Home')}
         >
           <div className="logo-wrapper">
-            <img src="/src/assets/my-logo.png" alt="ClickUdaan Logo" className="logo-image" />
+            <img src={myLogo} alt="ClickUdaan Logo" className="logo-image" />
           </div>
           <span className="logo-text">Clickउड़ान</span>
         </Link>
