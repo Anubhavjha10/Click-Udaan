@@ -12,6 +12,7 @@ import Careers from "./careers.tsx";
 import Blog from "./blog.tsx";
 import PrivacyPolicy from './PrivacyPolicy';
 import CopyrightNotice from './CopyrightNotice';
+import ScrollToTop from './components/ScrollToTop/ScrollToTop.tsx'
 
 
 import Navbar from "./components/Navbar/Navbar.tsx";
@@ -34,6 +35,7 @@ const App = () => (
   <>
   
     {/* Navbar ko yahan rakha hai taaki ye har page par nazar aaye */}
+    <ScrollToTop />
     <Navbar /> 
     <Routes>
       <Route path="/" element={<Home />} />

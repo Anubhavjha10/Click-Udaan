@@ -93,7 +93,7 @@
 }
 
 .footer-logo-img {
-  width: 160px;
+  width: 116px;
   height: auto;
   object-fit: contain;
   filter: brightness(1.1);
@@ -106,8 +106,8 @@
 }
 
 .footer-logo-img {
-  width: 40px; /* small logo */
-  height: 40px;
+  width: 150px; /* small logo */
+  height: 95px;
   object-fit: contain;
 }
 
