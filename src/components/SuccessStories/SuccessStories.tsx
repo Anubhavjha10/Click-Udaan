@@ -4,6 +4,7 @@ import portfolioWeb from '@/assets/portfolio-web.jpg';
 import portfolioLead from '@/assets/portfolio-lead.jpg';
 import successBg from '@/assets/success-bg.png';
 import './SuccessStories.css';
+import { Link } from 'react-router-dom';
 
 const projects = [
   { img: portfolioSocial, title: 'Social Media Campaign', client: 'Fashion Brand', result: '225% Engagement Increase' },
@@ -37,7 +38,8 @@ const SuccessStories = () => {
         </div>
 
         <div className="success-cta">
-            <a href="/Portfolio" className="btn-portfolio">View Full Portfolio</a>
+          <Link to="/portfolio" className='btn-portfolio'>View Full Portfolio</Link>
+            {/* <a href="/Portfolio" className="btn-portfolio">View Full Portfolio</a> */}
         </div>
       </div>
 
