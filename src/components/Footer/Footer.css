@@ -91,3 +91,64 @@
     grid-template-columns: 1fr;
   }
 }
+
+.footer-logo-img {
+  width: 160px;
+  height: auto;
+  object-fit: contain;
+  filter: brightness(1.1);
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-logo-img {
+  width: 40px; /* small logo */
+  height: 40px;
+  object-fit: contain;
+}
+
+.footer-logo-text {
+  font-size: 22px;
+  font-weight: 700;
+  color: white; /* ya jo theme hai */
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 30px;
+  padding-top: 18px;
+  text-align: center;
+}
+
+.footer-bottom p {
+  margin: 0 0 8px;
+  color: #d6dceb;
+  font-size: 0.9rem;
+}
+
+.footer-legal-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.footer-legal-links a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: 0.3s ease;
+}
+
+.footer-legal-links a:hover {
+  color: var(--yellow);
+}
+
+.footer-legal-links span {
+  color: rgba(255, 255, 255, 0.5);
+}

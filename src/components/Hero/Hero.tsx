@@ -1,8 +1,11 @@
 import rocketImg from '@/assets/rocket.png';
 import skylineImg from '@/assets/city-skyline.png';
+import { Link } from 'react-router-dom';
 import './Hero.css';
 
 const Hero = () => {
+
+
   return (
     <section className="hero">
       <div className="hero-bg">
@@ -21,14 +24,13 @@ const Hero = () => {
             Boost Your Business with Expert Digital Marketing Solutions.
           </p>
           <div className="hero-buttons">
-            <a href="#get-started" className="btn-yellow">Get Started</a>
-            <a href="#services" className="btn-white">Our Services</a>
+            <Link to="/contact" className="text-yellow-500 btn-yellow .hero-btn">Get Started</Link>\
+            <a href="/services" className="btn-white">Our Services</a>
           </div>
         </div>
 
         <div className="hero-right">
           <img src={rocketImg} alt="Rocket launching" className="hero-rocket" />
-          <div className="speech-bubble">May i help you?</div>
         </div>
       </div>
     </section>

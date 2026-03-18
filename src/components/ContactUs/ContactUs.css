@@ -134,17 +134,59 @@
   transform: translateY(-1px);
 }
 
+/* Mobile Responsive Adjustments */
 @media (max-width: 768px) {
   .contact {
-    padding: 50px 20px;
+    padding: 40px 16px; /* Spacing kam kar di mobile ke liye */
   }
 
   .contact-container {
-    grid-template-columns: 1fr;
-    gap: 32px;
+    grid-template-columns: 1fr; /* 2 columns ko 1 column kar diya */
+    gap: 30px;
+  }
+
+  .contact-title {
+    font-size: 1.75rem; /* Heading thodi choti ki */
+    text-align: center;
+  }
+
+  .contact-subtitle, .contact-desc {
+    text-align: center; /* Text ko center kiya taaki mobile par accha lage */
+  }
+
+  .contact-details {
+    align-items: center; /* Icons aur details ko center kiya */
+  }
+
+  .contact-socials {
+    justify-content: center; /* Social links center */
+    flex-wrap: wrap; /* Lambe links niche aa jayenge */
+  }
+
+  .contact-form {
+    padding: 24px 16px; /* Form ki padding kam ki */
+    width: 100%; /* Form poori width lega */
   }
 
   .form-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important; /* Force kiya ki inputs ek ke niche ek aayein */
+    gap: 0;
+  }
+
+  .form-input {
+    font-size: 16px; /* Mobile par typing ke waqt zoom-in issue rokne ke liye 16px best hai */
   }
 }
+
+/* Chote mobile phones ke liye (iPhone SE etc.) */
+@media (max-width: 480px) {
+  .contact-title {
+    font-size: 1.5rem;
+  }
+  
+  .social-link {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+}
+

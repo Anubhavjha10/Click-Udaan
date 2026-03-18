@@ -1,0 +1,146 @@
+.aboutPage { font-family: 'Inter', sans-serif; background-color: #F7F8FC; min-height: 100vh; color: #142B5F; overflow-x: hidden; }
+
+/* Hero Section */
+.hero { 
+  position: relative; 
+  background: linear-gradient(135deg, #0a1f4e 0%, #1a3a7a 40%, #2563c4 100%); 
+  min-height: 480px; 
+  padding: 80px 10%; 
+  display: flex; 
+  align-items: center; 
+  color: white; 
+  border-bottom-left-radius: 50% 30px; 
+  border-bottom-right-radius: 50% 30px; 
+  overflow: hidden; 
+}
+.heroSkyline { position: absolute; bottom: 0; left: 0; width: 100%; opacity: 0.15; pointer-events: none; }
+.heroContent { position: relative; z-index: 10; flex: 1.2; }
+.heroContent h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 10px; line-height: 1.2; }
+.heroSub { font-size: 1.4rem; color: #F4C21D; margin-bottom: 20px; }
+.heroImageContainer { flex: 1; display: flex; align-items: flex-end; justify-content: flex-end; position: relative; z-index: 10; }
+.character { height: 320px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2)); }
+.teamImg { height: 250px; margin-right: -40px; opacity: 0.8; }
+
+/* Mission Cards */
+.mvvSection { max-width: 1200px; margin: -60px auto 80px; padding: 0 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; position: relative; z-index: 30; }
+.card { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); transition: 0.3s; text-align: left; }
+.card:hover { transform: translateY(-8px); }
+.cardIcon { font-size: 2.5rem; margin-bottom: 15px; display: block; }
+
+/* Brand Connection Section */
+.brandConnection { position: relative; background-color: #f4f9ff; padding: 100px 0; overflow: hidden; }
+.brandBgDecor { position: absolute; inset: 0; pointer-events: none; }
+.cloudLeft { position: absolute; bottom: -50px; left: -100px; width: 400px; height: 200px; background: white; filter: blur(50px); border-radius: 50%; opacity: 0.8; }
+.cloudRight { position: absolute; bottom: -100px; right: -50px; width: 500px; height: 250px; background: white; filter: blur(60px); border-radius: 50%; opacity: 0.7; }
+.bgSkylineIllustration { position: absolute; top: 40%; right: 15%; width: 500px; opacity: 0.1; }
+
+.brandWrapper { max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 10; }
+.brandHeader { text-align: center; margin-bottom: 80px; }
+.brandHeader h2 { font-size: 3rem; font-weight: 800; color: #142B5F; margin-bottom: 10px; }
+.brandHeader p { font-size: 1.1rem; color: #4a5568; }
+
+.visualMainContainer { position: relative; padding-top: 50px; }
+.decorVisuals { position: absolute; top: -100px; right: 5%; display: flex; align-items: flex-end; z-index: 1; }
+.teamGroup { height: 220px; margin-right: -20px; opacity: 0.9; }
+.assistantMascot { height: 280px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1)); }
+
+.cardsConnectionRow { display: flex; align-items: center; justify-content: center; gap: 0; position: relative; z-index: 5; }
+
+.parentBrandCard { background: white; padding: 45px; border-radius: 35px; box-shadow: 0 15px 45px rgba(0,0,0,0.05); flex: 1.2; max-width: 580px; }
+.parentTitleBox { display: flex; align-items: center; background: white; border: 1px solid #f0f4f8; padding: 15px 25px; border-radius: 18px; box-shadow: 0 5px 20px rgba(0,0,0,0.02); margin-bottom: 30px; }
+.parentLogo { width: 45px; height: 45px; background: #142B5F; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 15px; }
+.logoSymbol { color: #F4C21D; font-weight: 900; font-size: 1.4rem; }
+.parentTitleBox h3 { color: #142B5F; font-size: 1.4rem; font-weight: 700; }
+
+.perksList { list-style: none; padding: 0; }
+.perksList li { display: flex; gap: 15px; margin-bottom: 20px; align-items: flex-start; }
+.checkIcon { color: #F4C21D; font-weight: 900; font-size: 1.2rem; }
+.perksList p { color: #4a5568; line-height: 1.6; font-size: 1.05rem; }
+
+.arrowConnector { margin: 0 -15px; transform: translateY(-30px); }
+.childBrandCard { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); flex: 0.8; max-width: 400px; margin-top: 60px; }
+.childHeader { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.rocketIcon { color: #0E4DA4; transform: rotate(-45deg); }
+.childHeader h3 { font-size: 1.8rem; font-weight: 800; color: #142B5F; }
+.childBrandCard p { color: #4a5568; line-height: 1.7; font-size: 1rem; }
+
+.brandFooter { text-align: center; margin-top: 100px; }
+.brandFooter h4 { font-size: 1.6rem; color: #142B5F; font-weight: 500; }
+.starsDivider { margin-top: 15px; font-weight: 700; color: #F4C21D; letter-spacing: 1px; font-size: 0.9rem; }
+
+/* --- PREMIUM FAQ SECTION --- */
+.faqSection { max-width: 900px; margin: 0 auto 100px; padding: 0 20px; }
+.faqItem { 
+  background: white; 
+  margin-bottom: 15px; 
+  border-radius: 15px; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
+  overflow: hidden; 
+  border: 1px solid #edf2f7;
+  transition: all 0.3s ease;
+}
+.activeFaq { 
+  border-color: #F4C21D; 
+  box-shadow: 0 10px 25px rgba(14, 77, 164, 0.08); 
+}
+.faqQuestion { 
+  padding: 22px 30px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  cursor: pointer; 
+  font-weight: 700; 
+  color: #142B5F;
+  font-size: 1.1rem;
+}
+.faqIconBox {
+  width: 32px;
+  height: 32px;
+  background: #f8faff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0E4DA4;
+  transition: 0.3s;
+}
+.activeFaq .faqIconBox { background: #F4C21D; color: #142B5F; }
+
+.faqAnswerWrapper {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+  opacity: 0;
+}
+.showAnswer { max-height: 500px; opacity: 1; }
+.faqAnswer { padding: 0 30px 25px 30px; color: #4a5568; line-height: 1.7; font-size: 1rem; }
+
+/* --- RESPONSIVE MEDIA QUERIES --- */
+
+@media (max-width: 1100px) {
+  .hero { flex-direction: column; text-align: center; padding: 60px 5% 100px; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .heroImageContainer { margin-top: 40px; justify-content: center; }
+  .heroContent h1 { font-size: 2.8rem; }
+  .mvvSection { grid-template-columns: repeat(2, 1fr); margin-top: -40px; }
+  .cardsConnectionRow { flex-direction: column; gap: 30px; }
+  .arrowConnector, .decorVisuals { display: none; }
+  .parentBrandCard, .childBrandCard { max-width: 100%; width: 100%; flex: none; }
+  .childBrandCard { margin-top: 0; }
+}
+
+@media (max-width: 768px) {
+  .heroContent h1 { font-size: 2.2rem; }
+  .character { height: 260px; }
+  .teamImg { display: none; }
+  .mvvSection { grid-template-columns: 1fr; margin-top: -30px; }
+  .brandHeader h2 { font-size: 2rem; }
+  .parentBrandCard, .childBrandCard { padding: 25px; border-radius: 20px; }
+  .parentTitleBox { padding: 10px 15px; flex-direction: column; text-align: center; }
+  .parentLogo { margin-right: 0; margin-bottom: 10px; }
+  .faqQuestion { padding: 20px; font-size: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .heroContent h1 { font-size: 1.8rem; }
+  .brandHeader h2 { font-size: 1.6rem; }
+}

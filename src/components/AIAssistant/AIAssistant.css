@@ -250,35 +250,222 @@
 }
 
 @media (max-width: 768px) {
+  /* Widget ki position thodi aur side mein */
   .ai-widget {
-    right: 12px;
-    bottom: 12px;
+    right: 10px;
+    bottom: 10px;
+    transform: scale(0.9); /* Poore widget ko thoda chota dikhane ke liye */
   }
 
+  /* Avatar (Veda ki image) ko chota kiya */
   .ai-avatar {
-    width: 100px;
-    height: 100px;
+    width: 80px;  /* Pehle 100px tha, ab 80px kar diya */
+    height: 80px;
+    margin-bottom: -10px; /* Gap kam karne ke liye */
   }
 
+  /* Card (Blue box) ko compact kiya */
   .ai-card {
-    padding: 20px 16px 14px;
-    min-width: 130px;
+    padding: 15px 12px 10px;
+    min-width: 110px;
+    border-radius: 12px;
   }
 
   .ai-name {
-    font-size: 1rem;
+    font-size: 0.9rem;
+    margin-bottom: 0px;
   }
 
+  .ai-role {
+    font-size: 0.7rem;
+    margin-bottom: 8px;
+  }
+
+  /* Chat button ko chota kiya */
   .ai-chat-btn {
-    padding: 8px 18px;
-    font-size: 0.8rem;
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    gap: 4px;
   }
 
+  /* Chat Window (Jab chat khulti hai) */
   .chat-window {
-    right: 8px;
-    bottom: 8px;
-    left: 8px;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
     width: auto;
-    height: 80vh;
+    height: 70vh; /* Screen ki height thodi kam cover karega */
   }
+}
+
+.ai-widget {
+  position: fixed; /* Screen par fix rahega */
+  right: 1px;
+  bottom: 0px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  /* --- Relative add karein --- */
+  position: fixed; 
+}
+
+/* Speech Bubble ka naya CSS */
+.ai-speech-bubble {
+  position: absolute;
+  top: -45px; /* Avatar ke head ke upar ki dury */
+  background: #FFD700; /* Yellow theme */
+  color: #000;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+  animation: popShow 5s infinite; /* 5 second loop */
+}
+
+/* Bubble ka chota arrow niche */
+.ai-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #FFD700;
+}
+
+@keyframes popShow {
+  0% { opacity: 0; transform: translateY(10px) scale(0.8); }
+  5% { opacity: 1; transform: translateY(0) scale(1); }   /* Aayega */
+  35% { opacity: 1; transform: translateY(0) scale(1); }  /* Thodi der rukega */
+  40% { opacity: 0; transform: translateY(-5px) scale(0.8); } /* Gayab ho jayega */
+  100% { opacity: 0; } /* Agle 3 second tak gayab rahega */
+}
+.chat-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.chat-quick-btn {
+  border: none;
+  background: #eef3ff;
+  color: var(--dark-blue);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'Poppins', sans-serif;
+}
+
+.chat-quick-btn:hover {
+  background: #dfe9ff;
+  transform: translateY(-1px);
+}
+
+.chat-whatsapp-link {
+  display: inline-block;
+  margin-top: 8px;
+  background: #25d366;
+  color: #fff !important;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.chat-whatsapp-link:hover {
+  background: #1ebe5d;
+}
+.chat-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.chat-quick-btn {
+  border: none;
+  background: #eef3ff;
+  color: var(--dark-blue);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'Poppins', sans-serif;
+}
+
+.chat-quick-btn:hover {
+  background: #dfe9ff;
+  transform: translateY(-1px);
+}
+
+.chat-whatsapp-link {
+  display: inline-block;
+  margin-top: 8px;
+  background: #25d366;
+  color: #fff !important;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.chat-whatsapp-link:hover {
+  background: #1ebe5d;
+}
+
+.chat-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.chat-quick-btn {
+  border: none;
+  background: #eef3ff;
+  color: var(--dark-blue);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'Poppins', sans-serif;
+}
+
+.chat-quick-btn:hover {
+  background: #dfe9ff;
+  transform: translateY(-1px);
+}
+
+.chat-whatsapp-link {
+  display: inline-block;
+  margin-top: 8px;
+  background: #25d366;
+  color: #fff !important;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.chat-whatsapp-link:hover {
+  background: #1ebe5d;
 }

@@ -125,3 +125,42 @@
     gap: 16px;
   }
 }
+
+.team-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: left;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.team-card:hover {
+  transform: translateY(-5px);
+}
+
+.team-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0e4da4;
+}
+
+.team-role {
+  font-size: 14px;
+  color: #555;
+  margin: 5px 0;
+}
+
+.team-desc {
+  font-size: 13px;
+  color: #777;
+  line-height: 1.5;
+}
+.team-badge {
+  background: #f4c21d;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  margin-bottom: 5px;
+  display: inline-block;
+}

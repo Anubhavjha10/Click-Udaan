@@ -1,0 +1,293 @@
+.page {
+  background: #f7f8fc;
+  color: #1d2b4f;
+  font-family: Inter, system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* HERO */
+.heroSection {
+  background: linear-gradient(90deg, #6a5cff 0%, #8b5cf6 50%, #c084fc 100%);
+  padding: 50px 20px 100px;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroSection::after {
+  content: "";
+  position: absolute;
+  bottom: -40px;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: radial-gradient(circle, #fff 40%, transparent 41%);
+  background-size: 200px 120px;
+}
+
+.heroContainer {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+.heroContent {
+  color: #fff;
+}
+
+.breadcrumb {
+  margin-bottom: 10px;
+}
+
+.heroTitle {
+  font-size: 60px;
+  font-weight: 800;
+  color: #f4c21d;
+}
+
+.heroSubtitle {
+  font-size: 28px;
+  margin: 10px 0;
+  color: #f3e8ff;
+}
+
+.heroDescription {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* VISUAL */
+.heroVisual {
+  position: relative;
+  height: 400px;
+}
+
+.dashboard {
+  width: 260px;
+  height: 160px;
+  background: white;
+  border-radius: 20px;
+  position: absolute;
+  right: 80px;
+  top: 40px;
+}
+
+.phone {
+  width: 130px;
+  height: 240px;
+  background: white;
+  border-radius: 25px;
+  position: absolute;
+  right: 200px;
+  top: 120px;
+}
+
+.badge1,
+.badge2,
+.rocket {
+  position: absolute;
+  background: white;
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.badge1 {
+  top: 80px;
+  right: 350px;
+}
+
+.badge2 {
+  top: 260px;
+  right: 150px;
+}
+
+.rocket {
+  top: 10px;
+  right: 50px;
+}
+
+/* SECTION */
+.section {
+  max-width: 1200px;
+  margin: auto;
+  padding: 60px 20px;
+}
+
+.title {
+  text-align: center;
+  font-size: 40px;
+  font-weight: 800;
+}
+
+.subtitle {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #6b7280;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
+
+.icon {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+/* PRICING */
+.pricingGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.pricingCard {
+  background: #fff;
+  padding: 30px;
+  border-radius: 25px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+.highlight {
+  border: 2px solid #f4c21d;
+}
+
+.price {
+  font-size: 35px;
+  color: #6a5cff;
+  margin: 10px 0;
+}
+
+.pricingCard ul {
+  list-style: none;
+  padding: 0;
+}
+
+.pricingCard li {
+  margin: 8px 0;
+}
+
+.btn {
+  display: block;
+  background: #f4c21d;
+  padding: 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #000;
+}
+
+/* FAQ */
+.faqList {
+  max-width: 800px;
+  margin: auto;
+}
+
+.faqItem {
+  background: white;
+  border-radius: 15px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.faqQuestion {
+  width: 100%;
+  padding: 15px;
+  background: none;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.faqAnswerWrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+.open {
+  max-height: 200px;
+}
+
+.faqAnswer {
+  padding: 15px;
+  color: #555;
+}
+
+.faqIcon {
+  font-size: 20px;
+}
+
+.rotate {
+  transform: rotate(45deg);
+}
+
+/* CTA */
+.cta {
+  text-align: center;
+  background: linear-gradient(180deg, #f3e8ff, #faf5ff);
+  padding: 60px 20px;
+  border-radius: 30px;
+  margin: 40px auto;
+  max-width: 1100px;
+}
+
+.ctaBtn {
+  display: inline-block;
+  margin-top: 15px;
+  background: #f4c21d;
+  padding: 15px 25px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: bold;
+  color: #000;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pricingGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroTitle {
+    font-size: 40px;
+  }
+
+  .heroSubtitle {
+    font-size: 20px;
+  }
+}

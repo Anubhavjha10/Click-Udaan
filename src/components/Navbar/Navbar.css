@@ -18,27 +18,45 @@
   margin: 0 auto;
 }
 
+/* --- LOGO SECTION --- */
 .navbar-logo {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
+  color: var(--dark-blue);
+  text-decoration: none;
+}
+
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 35px;
+  width: auto;
+}
+
+.logo-image {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.logo-text {
   font-size: 1.4rem;
   font-weight: 700;
-  color: var(--dark-blue);
+  line-height: 1;
 }
 
-.logo-icon {
-  color: var(--yellow);
-  font-size: 1.3rem;
-}
-
+/* --- MENU SECTION --- */
 .navbar-menu {
   display: flex;
   align-items: center;
   gap: 28px;
+  list-style: none; /* List dots hatane ke liye */
 }
 
-.nav-item a {
+.nav-item > a {
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-dark);
@@ -48,13 +66,14 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  text-decoration: none;
 }
 
-.nav-item.active a {
+.nav-item.active > a {
   color: var(--dark-blue);
 }
 
-.nav-item.active a::after {
+.nav-item.active > a::after {
   content: '';
   position: absolute;
   bottom: -2px;
@@ -65,8 +84,13 @@
   border-radius: 2px;
 }
 
-.nav-item a:hover {
+.nav-item > a:hover {
   color: var(--bright-blue);
+}
+
+.dropdown-link::after {
+  display: none !important;
+  content: none !important;
 }
 
 .dropdown-arrow {
@@ -74,25 +98,27 @@
   transition: var(--transition);
 }
 
-/* Dropdown */
+/* --- DROPDOWN (FLATICON ICONS FIX) --- */
 .has-dropdown {
   position: relative;
 }
 
+/* --- DROPDOWN CONTAINER --- */
 .dropdown {
   position: absolute;
   top: 100%;
   left: -20px;
   background: var(--white);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-card);
-  min-width: 240px;
-  padding: 8px 0;
+  border-radius: 18px; /* Thoda zyada rounded modern look ke liye */
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1); /* Soft shadow */
+  min-width: 260px;
+  padding: 12px 0; /* Upar niche halki padding */
   opacity: 0;
   visibility: hidden;
-  transform: translateY(8px);
-  transition: var(--transition);
-  margin-top: 12px;
+  transform: translateY(12px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 15px; /* Navbar se thoda gap */
+  list-style: none;
 }
 
 .has-dropdown:hover .dropdown {
@@ -101,27 +127,84 @@
   transform: translateY(0);
 }
 
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--text-dark);
-  cursor: pointer;
-  transition: var(--transition);
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: -20px;
+  background: var(--white);
+  border-radius: 18px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  min-width: 260px;
+  padding: 12px 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 15px;
+  list-style: none;
+
+  max-height: 420px;   /* ADD */
+  overflow-y: auto;    /* ADD */
+  overflow-x: hidden;  /* ADD */
 }
 
-.dropdown-item:hover {
-  background: var(--light-bg);
+.dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 20px;
+}
+
+/* --- EACH DROPDOWN ITEM --- */
+.dropdown-item {
+  width: 100%;
+  list-style: none;
+}
+
+/* --- THE CLICKABLE LINK (MAIN FIX HERE) --- */
+.dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: 14px; /* Icon aur text ke beech gap */
+  padding: 14px 24px; /* Spacing badha di taaki chipka hua na lage */
+  text-decoration: none;
+  color: var(--text-dark);
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.dropdown-link:hover {
+  background: #f8faff; /* Boht halka background hover par */
   color: var(--bright-blue);
 }
 
-.dropdown-icon {
-  font-size: 1.1rem;
+/* --- ICON STYLING --- */
+.nav-dropdown-img {
+  width: 30px; /* Thoda sa bada icon clear dikhne ke liye */
+  height: 30px;
+  object-fit: contain;
+  flex-shrink: 0; /* Icon dabbe na */
+  transition: transform 0.3s ease;
 }
 
+.dropdown-link:hover .nav-dropdown-img {
+  transform: scale(1.1); /* Hover par halka pop-up */
+}
+
+/* --- TEXT STYLING --- */
+.label-text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.2; /* Text ki line spacing theek karne ke liye */
+}
+
+/* --- CTA BUTTON --- */
 .navbar-cta {
   background: var(--dark-blue);
   color: var(--white);
@@ -131,6 +214,7 @@
   font-weight: 600;
   transition: var(--transition);
   white-space: nowrap;
+  text-decoration: none;
 }
 
 .navbar-cta:hover {
@@ -138,7 +222,7 @@
   transform: translateY(-1px);
 }
 
-/* Hamburger */
+/* --- HAMBURGER --- */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -158,30 +242,15 @@
   transition: var(--transition);
 }
 
-.hamburger.active span:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-.hamburger.active span:nth-child(2) {
-  opacity: 0;
-}
-.hamburger.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
-}
+.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
-/* Mobile */
+/* --- MOBILE RESPONSIVE --- */
 @media (max-width: 768px) {
-  .navbar-wrapper {
-    padding: 8px 16px;
-  }
-
-  .navbar {
-    padding: 10px 20px;
-    flex-wrap: wrap;
-  }
-
-  .hamburger {
-    display: flex;
-  }
+  .navbar-wrapper { padding: 8px 16px; }
+  .navbar { padding: 10px 20px; flex-wrap: wrap; }
+  .hamburger { display: flex; }
 
   .navbar-menu {
     display: none;
@@ -189,36 +258,58 @@
     width: 100%;
     gap: 0;
     padding-top: 16px;
+    background: white;
   }
 
-  .navbar-menu.open {
-    display: flex;
-  }
-
-  .nav-item {
-    width: 100%;
-  }
-
+  .navbar-menu.open { display: flex; }
+  .nav-item { width: 100%; }
+  
   .nav-item a {
-    padding: 12px 0;
+    padding: 15px 0;
     border-bottom: 1px solid var(--light-bg);
     width: 100%;
+    justify-content: space-between;
   }
 
   .dropdown {
-    position: static;
-    box-shadow: none;
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-    margin-top: 0;
-    padding-left: 16px;
-  }
+  position: static;
+  box-shadow: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: none;
+  margin-top: 0;
+  padding-left: 10px;
+  min-width: 100%;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
 
+.show-mobile-dropdown {
+  opacity: 1 !important;
+  visibility: visible !important;
+  max-height: 260px !important;
+  overflow-y: auto !important;
+}
+
+
+  .dropdown-link { padding: 10px 0; }
+  
   .navbar-cta {
     margin-top: 12px;
     text-align: center;
     display: block;
     width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .dropdown::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .dropdown::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
   }
 }

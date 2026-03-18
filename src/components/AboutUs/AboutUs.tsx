@@ -4,9 +4,21 @@ import team3 from '@/assets/team-3.jpg';
 import './AboutUs.css';
 
 const team = [
-  { img: team1, name: 'Rajesh Kumar', role: 'Founder & CEO' },
-  { img: team2, name: 'Priya Sharma', role: 'Head of Marketing' },
-  { img: team3, name: 'Amit Verma', role: 'Creative Director' },
+  {
+    name: 'Kumar Anubhav',
+    role: 'Founder & CEO',
+    desc: 'Leads company vision and growth strategies with strong business insight.'
+  },
+  {
+    name: 'Vivek Manishi',
+    role: 'Founder Vabit Digify Media Pvt Ltd',
+    desc: 'Leading ClickUdaan’s growth under Vabit Digify Media, delivering innovative digital solutions and business success.'
+  },
+  {
+    name: 'Ankur Jha',
+    role: 'Director',
+    desc: 'Empowering ClickUdaan with leadership, creativity, and result-driven digital strategies.'
+  },
 ];
 
 const AboutUs = () => {
@@ -52,9 +64,10 @@ const AboutUs = () => {
           <div className="team-grid">
             {team.map((m) => (
               <div key={m.name} className="team-card">
-                <img src={m.img} alt={m.name} className="team-img" />
+                <span className="team-badge">ClickUdaan Team</span>
                 <h4 className="team-name">{m.name}</h4>
                 <p className="team-role">{m.role}</p>
+                <p className="team-desc">{m.desc}</p>
               </div>
             ))}
           </div>
