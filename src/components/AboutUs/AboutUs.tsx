@@ -19,6 +19,11 @@ const team = [
     role: 'Director',
     desc: 'Empowering ClickUdaan with leadership, creativity, and result-driven digital strategies.'
   },
+  {
+    name: 'Ashish Shrivastava',
+    role: 'Co-founder Vabit Digify Media Pvt Ltd',
+    desc: 'Proud to partner with ClickUdaan, driving growth and digital success.'
+  },
 ];
 
 const AboutUs = () => {
