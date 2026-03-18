@@ -35,12 +35,16 @@ const Footer = () => {
         <div className="footer-links-group">
           <h4 className="footer-heading">Company</h4>
           <ul className="footer-links">
-            <li><a href="/about">About Us</a></li>
-            <li><a href="/portfolio">Portfolio</a></li>
-            <li><a href="/contact">Contact Us</a></li>
-            <li><a href="/careers">Careers</a></li>
-            <li><a href="/blog">Blog</a></li>
-            <li><a href="/verify">Verify</a></li>
+            <li>
+              <Link to="/about">About Us</Link>
+              </li>
+            <li>
+              <Link to="/portfolio">Portfolio</Link>
+              </li>
+            <li><Link to="/contact">Contact Us</Link></li>
+            <li><Link to="/careers">Careers</Link></li>
+            <li><Link to="/blog">Blog</Link></li>
+            <li><Link to="/verify">Verify</Link></li>
           </ul>
         </div>
 
