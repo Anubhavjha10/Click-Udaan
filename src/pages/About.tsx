@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styles from './AboutUs.module.css';
 import teamImg from '@/assets/Team.png';
 import udaaniImg from '@/assets/ai-assistant.png';
+import logo from "@/assets/vabit-logo.png";
 import { ChevronDown, ChevronUp, Check, Rocket } from 'lucide-react';
 
 // Premium FAQ Component with Smooth Animation
@@ -92,9 +93,16 @@ const AboutUs: React.FC = () => {
               <div className={styles.parentBrandCard}>
                 <div className={styles.parentTitleBox}>
                   <div className={styles.parentLogo}>
-                    <div className={styles.logoSymbol}>V</div>
+                    <img src={logo} alt="Vabit Digify Media Logo" className={styles.logoImage} />
                   </div>
-                  <h3>Vabit Digify Media Pvt. Ltd.</h3>
+                  <a 
+                    href="https://vabitdigify.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={styles.companyLink}
+                  >
+                    <h3>Vabit Digify Media Pvt. Ltd.</h3>
+                  </a>
                 </div>
                 
                 <ul className={styles.perksList}>

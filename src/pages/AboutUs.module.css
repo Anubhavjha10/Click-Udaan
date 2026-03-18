@@ -144,3 +144,17 @@
   .heroContent h1 { font-size: 1.8rem; }
   .brandHeader h2 { font-size: 1.6rem; }
 }
+.logoImage {
+  height: 35px;
+  width: auto;
+  object-fit: contain;
+}
+
+.companyLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.companyLink:hover {
+  opacity: 0.8;
+}
