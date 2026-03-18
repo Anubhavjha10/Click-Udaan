@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './AboutUs.module.css';
+import teamImg from '@/assets/Team.png';
+import udaaniImg from '@/assets/ai-assistant.png';
 import { ChevronDown, ChevronUp, Check, Rocket } from 'lucide-react';
 
 // Premium FAQ Component with Smooth Animation
@@ -42,8 +44,8 @@ const AboutUs: React.FC = () => {
           </p>
         </div>
         <div className={styles.heroImageContainer}>
-           <img src="/src/assets/Team.png" alt="Team" className={styles.teamImg} />
-           <img src="/src/assets/ai-assistant.png" alt="Udaani" className={styles.character} />
+           <img src= {teamImg} alt="Team" className={styles.teamImg} />
+           <img src= {udaaniImg} alt="Udaani" className={styles.character} />
         </div>
       </section>
 
