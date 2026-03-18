@@ -24,7 +24,7 @@ const Hero = () => {
             Boost Your Business with Expert Digital Marketing Solutions.
           </p>
           <div className="hero-buttons">
-            <Link to="/contact" className="text-yellow-500 btn-yellow .hero-btn">Get Started</Link>\
+            <Link to="/contact" className="text-yellow-500 btn-yellow .hero-btn">Get Started</Link>
             <a href="/services" className="btn-white">Our Services</a>
           </div>
         </div>

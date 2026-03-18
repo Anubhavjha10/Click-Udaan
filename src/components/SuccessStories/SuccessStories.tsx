@@ -37,7 +37,7 @@ const SuccessStories = () => {
         </div>
 
         <div className="success-cta">
-          <a href="/portfolio" className="btn-portfolio">View Full Portfolio</a>
+            <a href="/Portfolio" className="btn-portfolio">View Full Portfolio</a>
         </div>
       </div>
 
