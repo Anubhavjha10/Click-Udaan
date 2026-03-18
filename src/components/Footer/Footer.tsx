@@ -63,9 +63,11 @@ const Footer = () => {
       <div className="footer-bottom">
         <p>© 2026 ClickUdaan. All rights reserved.</p>
         <div className="footer-legal-links">
-          <a href="/privacy-policy">Privacy Policy</a>
+          <Link to="/privacy-policy">Privacy Policy</Link>
+          {/* <a href="/privacy-policy">Privacy Policy</a> */}
           <span>|</span>
-          <a href="/copyright-notice">Copyright Notice</a>
+          {/* <a href="/copyright-notice">Copyright Notice</a> */}
+          <Link to="/copyright-notice">Copyright Notice</Link>
         </div>
       </div>
     </footer>
