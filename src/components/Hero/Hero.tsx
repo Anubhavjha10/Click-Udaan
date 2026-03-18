@@ -25,7 +25,7 @@ const Hero = () => {
           </p>
           <div className="hero-buttons">
             <Link to="/contact" className="text-yellow-500 btn-yellow .hero-btn">Get Started</Link>
-            <a href="/services" className="btn-white">Our Services</a>
+            <Link to="/services" className='btn-white'>Our Services</Link>
           </div>
         </div>
 
