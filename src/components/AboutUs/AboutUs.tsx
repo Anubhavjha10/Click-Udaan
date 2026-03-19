@@ -16,7 +16,7 @@ const team = [
   },
   {
     name: 'Ankur Jha',
-    role: 'Director',
+    role: 'Co-Founder & Director',
     desc: 'Empowering ClickUdaan with leadership, creativity, and result-driven digital strategies.'
   },
   {

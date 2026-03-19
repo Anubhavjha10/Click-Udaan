@@ -50,7 +50,8 @@ const Footer = () => {
         <div className="footer-links-group">
           <h4 className="footer-heading">Contact</h4>
           <ul className="footer-links">
-            <a href="mailto:hello@clickudaan.com">📧 hello@clickudaan.com</a>
+            <a href="mailto:info@clickudaan.com">📧 info@clickudaan.com</a>
+            <a href="mailto:contact@clickudaan.in">📧 contact@clickudaan.in</a>
             {/* <li>📞 +91 85060 95853</li> */}
             <a href="tel:+918506095853">📞 +91 85060 95853</a>
             <a href="https://maps.app.goo.gl/aNkYHFFp9rypmerc7" target='_blank'>📍 Iconic Tower, Sector- 63, Noida, UP, India</a>
