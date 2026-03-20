@@ -19,7 +19,7 @@ const dummyData: Certificate[] = [
     email: "rajputsimran2428@gmail.com",
     course: "Web Development Internship",
     duration: "2 Months",
-    issueDate: "01 Jan 2026",
+    issueDate: "01 March 2026",
     college: "IB College Panipat",
     organization: "ClickUdaan (By Vabit Digify Media Pvt Ltd)",
   },
@@ -76,7 +76,7 @@ const CertificateVerification = () => {
 
         {result && (
           <div className={styles.resultCard}>
-            <h2>✅ Certificate Verified</h2>
+            <h2>Certificate Verified</h2>
 
             <div className={styles.detail}>
               <strong>Name:</strong> {result.name}
