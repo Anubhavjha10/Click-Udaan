@@ -10,6 +10,7 @@ type Certificate = {
   issueDate: string;
   college: string;
   organization: string;
+  coursepartner: string;
 };
 
 const dummyData: Certificate[] = [
@@ -32,6 +33,16 @@ const dummyData: Certificate[] = [
     issueDate: "15 Feb 2026",
     college: "IB College Panipat",
     organization: "ClickUdaan",
+  },
+  {
+    id: "CU-CEEP-2026-133",
+    name: "Shivam Aditya",
+    email: "adityamishra4089@gmail.com",
+    course: "ClickUdaan Excel Essentials Program",
+    duration: "4 Week",
+    issueDate: "5 Feb 2026",
+    organization: "ClickUdaan",
+    coursepartner: "Vabit Digify Media Pvt Ltd",
   },
 ];
 
