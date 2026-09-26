@@ -16,17 +16,17 @@ import {
 import { useAuth } from "../../context/AuthContext";
 
 export const AdminLayout: React.FC = () => {
-  const { user, isAdmin, loading, logout } = useAuth();
+  const { user, isAdmin, isOtpVerified, loading, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  // Protected route check
+  // Protected route check: requires authenticated user, active Firestore admin doc, and completed 2FA OTP
   useEffect(() => {
-    if (!loading && (!user || !isAdmin)) {
+    if (!loading && (!user || !isAdmin || !isOtpVerified)) {
       navigate("/admin/login");
     }
-  }, [user, isAdmin, loading, navigate]);
+  }, [user, isAdmin, isOtpVerified, loading, navigate]);
 
   if (loading) {
     return (
@@ -34,13 +34,13 @@ export const AdminLayout: React.FC = () => {
         <div className="text-center">
           <div className="w-10 h-10 border-3 border-[#0E4DA4] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <h2 className="text-sm font-bold text-slate-800">Verifying Admin Privileges...</h2>
-          <p className="text-xs text-slate-400 mt-0.5">Checking Firestore authorization</p>
+          <p className="text-xs text-slate-400 mt-0.5">Checking Firestore authorization and 2FA status</p>
         </div>
       </div>
     );
   }
 
-  if (!user || !isAdmin) {
+  if (!user || !isAdmin || !isOtpVerified) {
     return null;
   }
 

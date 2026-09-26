@@ -3,6 +3,9 @@ import sendOtpHandler from "../api/auth/send-otp";
 import verifyOtpHandler from "../api/auth/verify-otp";
 import studentRecordsHandler from "../api/student/records";
 import verifyCertificateHandler from "../api/certificates/verify";
+import adminSendOtpHandler from "../api/auth/admin-send-otp";
+import adminVerifyOtpHandler from "../api/auth/admin-verify-otp";
+import adminVerifySessionHandler from "../api/auth/admin-verify-session";
 
 export function devApiPlugin(): Plugin {
   return {
@@ -17,6 +20,9 @@ export function devApiPlugin(): Plugin {
         else if (url === "/api/auth/verify-otp") handler = verifyOtpHandler;
         else if (url === "/api/student/records") handler = studentRecordsHandler;
         else if (url === "/api/certificates/verify") handler = verifyCertificateHandler;
+        else if (url === "/api/auth/admin-send-otp") handler = adminSendOtpHandler;
+        else if (url === "/api/auth/admin-verify-otp") handler = adminVerifyOtpHandler;
+        else if (url === "/api/auth/admin-verify-session") handler = adminVerifySessionHandler;
 
         if (!handler) {
           return next();

@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { initializeApp, getApps, cert, applicationDefault, type App } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
+import { getAuth, type Auth } from "firebase-admin/auth";
 
 let adminApp: App | null = null;
 
@@ -94,6 +95,17 @@ export function getAdminFirestore(): Firestore | null {
     return getFirestore(app);
   } catch (err: any) {
     console.error("[FIREBASE_ADMIN] Failed to acquire Admin Firestore instance:", err.message || err);
+    return null;
+  }
+}
+
+export function getAdminAuth(): Auth | null {
+  const app = getFirebaseAdminApp();
+  if (!app) return null;
+  try {
+    return getAuth(app);
+  } catch (err: any) {
+    console.error("[FIREBASE_ADMIN] Failed to acquire Admin Auth instance:", err.message || err);
     return null;
   }
 }

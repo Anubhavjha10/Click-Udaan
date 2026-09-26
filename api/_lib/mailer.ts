@@ -123,3 +123,96 @@ export async function sendOtpEmail(toEmail: string, otp: string): Promise<{ succ
     return { success: false, error: err.message || "Failed to send email via SMTP" };
   }
 }
+
+export async function sendAdminOtpEmail(
+  toEmail: string,
+  otp: string
+): Promise<{ success: boolean; error?: string }> {
+  ensureEnvLoaded();
+
+  const host = process.env.SMTP_HOST || "smtp.gmail.com";
+  const port = parseInt(process.env.SMTP_PORT || "587", 10);
+  const user = process.env.SMTP_USER || "clickudaan@gmail.com";
+  let pass = process.env.SMTP_PASSWORD;
+  if (pass) {
+    pass = pass.replace(/\s+/g, "");
+    if ((pass.startsWith('"') && pass.endsWith('"')) || (pass.startsWith("'") && pass.endsWith("'"))) {
+      pass = pass.slice(1, -1);
+    }
+  }
+  const fromEmail = process.env.SMTP_FROM_EMAIL || "clickudaan@gmail.com";
+  const fromName = process.env.SMTP_FROM_NAME || "ClickUdaan";
+
+  if (!pass || pass.trim() === "" || pass === "YOUR_GMAIL_APP_PASSWORD") {
+    console.error("[MAILER] SMTP_PASSWORD is not configured in environment. Admin OTP cannot be sent.");
+    return { success: false, error: "SMTP service is not configured (missing SMTP_PASSWORD)" };
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: {
+        user,
+        pass,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+
+    await transporter.verify();
+
+    const html = `
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 550px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+        <div style="background: linear-gradient(135deg, #0b132b 0%, #0e4da4 100%); padding: 32px 24px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: 0.5px;">Click<span style="color: #f4c21d;">उड़ान</span> CMS</h1>
+          <p style="color: #e2e8f0; margin: 8px 0 0 0; font-size: 14px;">Administrator Control Center • Two-Factor Authentication</p>
+        </div>
+        
+        <div style="padding: 32px 28px;">
+          <h2 style="color: #0b132b; font-size: 20px; margin-top: 0; margin-bottom: 12px;">Admin Login Verification Code</h2>
+          <p style="color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 24px 0;">
+            A login attempt to the ClickUdaan Admin CMS was initiated with your credentials. Your ClickUdaan Admin Login OTP is:
+          </p>
+          
+          <div style="background-color: #f8fafc; border: 2px dashed #0e4da4; border-radius: 12px; padding: 22px; text-align: center; margin-bottom: 24px;">
+            <span style="font-size: 38px; font-weight: 800; letter-spacing: 10px; color: #0e4da4; font-family: monospace;">${otp}</span>
+          </div>
+          
+          <p style="color: #64748b; font-size: 13px; line-height: 1.6; margin: 0 0 10px 0;">
+            ⏳ This OTP is valid for <strong>10 minutes</strong>.
+          </p>
+          <p style="color: #94a3b8; font-size: 13px; line-height: 1.5; margin: 0;">
+            If you did not attempt to log in to the ClickUdaan Admin CMS, you can ignore this email.
+          </p>
+        </div>
+        
+        <div style="background-color: #f1f5f9; padding: 16px 24px; text-align: center; border-top: 1px solid #e2e8f0;">
+          <p style="color: #64748b; font-size: 12px; margin: 0;">
+            © 2026 ClickUdaan (Vabit Digify Media Pvt Ltd). All rights reserved.
+          </p>
+        </div>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: `"${fromName}" <${fromEmail}>`,
+      to: toEmail,
+      subject: `ClickUdaan Admin Login OTP`,
+      html,
+      text: `Your ClickUdaan Admin Login OTP is: ${otp}\n\nThis OTP is valid for 10 minutes.\n\nIf you did not attempt to log in to the ClickUdaan Admin CMS, you can ignore this email.`,
+    });
+
+    return { success: true };
+  } catch (err: any) {
+    console.error("[MAILER_ERROR] Nodemailer error occurred sending admin OTP:");
+    console.error(`- error.code: ${err.code || "N/A"}`);
+    console.error(`- error.command: ${err.command || "N/A"}`);
+    console.error(`- error.responseCode: ${err.responseCode || "N/A"}`);
+    console.error(`- error.response: ${err.response || "N/A"}`);
+    console.error(`- error.message: ${err.message || err}`);
+    return { success: false, error: err.message || "Failed to send email via SMTP" };
+  }
+}
