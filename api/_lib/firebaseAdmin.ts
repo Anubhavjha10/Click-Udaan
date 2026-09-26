@@ -6,7 +6,27 @@ import { getAuth, type Auth } from "firebase-admin/auth";
 
 let adminApp: App | null = null;
 
+export function formatFirebasePrivateKey(key: string | undefined): string | undefined {
+  if (!key) return undefined;
+  let formatted = key.trim();
+  // Strip outer quotes (single or double) if present
+  if (
+    (formatted.startsWith('"') && formatted.endsWith('"')) ||
+    (formatted.startsWith("'") && formatted.endsWith("'"))
+  ) {
+    formatted = formatted.slice(1, -1).trim();
+  }
+  // Replace escaped \n and \r\n with real newlines
+  formatted = formatted.replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n");
+  return formatted;
+}
+
 function detectLocalServiceAccount(): { clientEmail?: string; privateKey?: string; projectId?: string } | null {
+  // Never attempt to load local file in production/Vercel
+  if (process.env.VERCEL || process.env.NODE_ENV === "production" || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return null;
+  }
+
   try {
     const rootDir = process.cwd();
     const files = fs.readdirSync(rootDir);
@@ -36,23 +56,25 @@ export function getFirebaseAdminApp(): App | null {
     return existingApps[0];
   }
 
-  const localAccount = detectLocalServiceAccount();
+  const isProduction = Boolean(process.env.VERCEL || process.env.NODE_ENV === "production" || process.env.AWS_LAMBDA_FUNCTION_NAME);
+  const localAccount = isProduction ? null : detectLocalServiceAccount();
+
   const projectId =
-    localAccount?.projectId ||
     process.env.FIREBASE_PROJECT_ID ||
+    localAccount?.projectId ||
     process.env.VITE_FIREBASE_PROJECT_ID ||
     "clickudaan-20cfe";
-  const clientEmail = localAccount?.clientEmail || process.env.FIREBASE_CLIENT_EMAIL?.trim();
-  let privateKey = localAccount?.privateKey || process.env.FIREBASE_PRIVATE_KEY?.trim();
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim() || localAccount?.clientEmail;
+  const rawPrivateKey = process.env.FIREBASE_PRIVATE_KEY?.trim() || localAccount?.privateKey;
+  const formattedKey = formatFirebasePrivateKey(rawPrivateKey);
 
-  if (clientEmail && privateKey) {
+  // Safe diagnostics (never log secrets/keys)
+  console.log(`[FIREBASE_ADMIN] project ID configured: ${Boolean(projectId)}`);
+  console.log(`[FIREBASE_ADMIN] client email configured: ${Boolean(clientEmail)}`);
+  console.log(`[FIREBASE_ADMIN] private key configured: ${Boolean(rawPrivateKey)}`);
+
+  if (clientEmail && formattedKey) {
     try {
-      // Support multiline strings, escaped \n, and accidental wrapping quotes
-      if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
-        privateKey = privateKey.slice(1, -1);
-      }
-      const formattedKey = privateKey.replace(/\\n/g, "\n");
-
       adminApp = initializeApp({
         credential: cert({
           projectId,
@@ -83,7 +105,7 @@ export function getFirebaseAdminApp(): App | null {
 
   const missing: string[] = [];
   if (!clientEmail) missing.push("FIREBASE_CLIENT_EMAIL");
-  if (!privateKey) missing.push("FIREBASE_PRIVATE_KEY");
+  if (!rawPrivateKey) missing.push("FIREBASE_PRIVATE_KEY");
   console.warn(`[FIREBASE_ADMIN] Missing server credentials: ${missing.join(", ")}. Admin SDK is not initialized.`);
   return null;
 }

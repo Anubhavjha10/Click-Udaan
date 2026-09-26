@@ -11,13 +11,32 @@ interface AdminOTPRecord {
   email: string;
 }
 
-// In-memory fallback if Firestore is temporarily offline in local test environments
+// In-memory fallback if Firestore is slow, unreachable, or in serverless warm instances
 const memoryCache = new Map<string, AdminOTPRecord>();
 
 const OTP_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
 const RESEND_COOLDOWN_MS = 60 * 1000; // 60 seconds
 const MAX_ATTEMPTS = 5;
 const SESSION_EXPIRY_MS = 8 * 60 * 60 * 1000; // 8 hours
+const FIRESTORE_OP_TIMEOUT_MS = 3500; // 3.5s max to avoid Lambda timeouts
+
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+  let timer: NodeJS.Timeout;
+  const timeoutPromise = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), ms);
+  });
+  return Promise.race([
+    promise.then((res) => {
+      clearTimeout(timer);
+      return res;
+    }),
+    timeoutPromise,
+  ]).catch((err) => {
+    clearTimeout(timer);
+    console.warn("[ADMIN_OTP] Firestore operation failed:", err?.message || err);
+    return null;
+  });
+}
 
 export function generateAdmin6DigitOTP(): string {
   // Cryptographically secure 6-digit number [100000, 999999]
@@ -45,11 +64,13 @@ export async function canSendAdminOTP(
     let lastSentAt: number | undefined;
 
     if (db) {
-      const snap = await db.collection("admin_otps").doc(uid).get();
-      if (snap.exists) {
+      const snap = await withTimeout(db.collection("admin_otps").doc(uid).get(), FIRESTORE_OP_TIMEOUT_MS);
+      if (snap && snap.exists) {
         lastSentAt = snap.data()?.lastSentAt;
       }
-    } else {
+    }
+
+    if (!lastSentAt) {
       const mem = memoryCache.get(uid);
       lastSentAt = mem?.lastSentAt;
     }
@@ -86,12 +107,16 @@ export async function saveAdminOTP(
     email: email.trim().toLowerCase(),
   };
 
+  // Always write to memoryCache for immediate availability
   memoryCache.set(uid, record);
 
   try {
     const db = getAdminFirestore();
     if (db) {
-      await db.collection("admin_otps").doc(uid).set(record);
+      await withTimeout(
+        db.collection("admin_otps").doc(uid).set(record),
+        FIRESTORE_OP_TIMEOUT_MS
+      );
     }
   } catch (err) {
     console.error("[ADMIN_OTP] Error saving OTP to Firestore:", err);
@@ -107,8 +132,8 @@ export async function verifyAdminOTP(
     let record: AdminOTPRecord | undefined;
 
     if (db) {
-      const snap = await db.collection("admin_otps").doc(uid).get();
-      if (snap.exists) {
+      const snap = await withTimeout(db.collection("admin_otps").doc(uid).get(), FIRESTORE_OP_TIMEOUT_MS);
+      if (snap && snap.exists) {
         record = snap.data() as AdminOTPRecord;
       }
     }
@@ -127,7 +152,7 @@ export async function verifyAdminOTP(
     if (now > record.expiresAt) {
       memoryCache.delete(uid);
       if (db) {
-        await db.collection("admin_otps").doc(uid).delete().catch(() => {});
+        withTimeout(db.collection("admin_otps").doc(uid).delete(), FIRESTORE_OP_TIMEOUT_MS).catch(() => {});
       }
       return { success: false, error: "OTP has expired. Please request a new code." };
     }
@@ -136,7 +161,7 @@ export async function verifyAdminOTP(
     if (record.attempts >= MAX_ATTEMPTS) {
       memoryCache.delete(uid);
       if (db) {
-        await db.collection("admin_otps").doc(uid).delete().catch(() => {});
+        withTimeout(db.collection("admin_otps").doc(uid).delete(), FIRESTORE_OP_TIMEOUT_MS).catch(() => {});
       }
       return { success: false, error: "Too many attempts. Please request a new OTP." };
     }
@@ -150,9 +175,9 @@ export async function verifyAdminOTP(
 
       if (db) {
         if (newAttempts >= MAX_ATTEMPTS) {
-          await db.collection("admin_otps").doc(uid).delete().catch(() => {});
+          withTimeout(db.collection("admin_otps").doc(uid).delete(), FIRESTORE_OP_TIMEOUT_MS).catch(() => {});
         } else {
-          await db.collection("admin_otps").doc(uid).update({ attempts: newAttempts }).catch(() => {});
+          withTimeout(db.collection("admin_otps").doc(uid).update({ attempts: newAttempts }), FIRESTORE_OP_TIMEOUT_MS).catch(() => {});
         }
       }
 
@@ -166,7 +191,7 @@ export async function verifyAdminOTP(
     // Success! Consume OTP (one-time use)
     memoryCache.delete(uid);
     if (db) {
-      await db.collection("admin_otps").doc(uid).delete().catch(() => {});
+      withTimeout(db.collection("admin_otps").doc(uid).delete(), FIRESTORE_OP_TIMEOUT_MS).catch(() => {});
     }
 
     return { success: true };

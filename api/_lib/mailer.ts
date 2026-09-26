@@ -3,6 +3,11 @@ import * as path from "path";
 import nodemailer from "nodemailer";
 
 function ensureEnvLoaded() {
+  // In Vercel / AWS Lambda production, environment variables are already injected
+  if (process.env.VERCEL || process.env.NODE_ENV === "production" || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return;
+  }
+
   try {
     const envPath = path.resolve(process.cwd(), ".env");
     if (fs.existsSync(envPath)) {
@@ -17,14 +22,17 @@ function ensureEnvLoaded() {
           if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
             val = val.slice(1, -1);
           }
-          process.env[key] = val;
+          // Do not overwrite existing env variables with empty strings
+          if (!process.env[key] && val.trim() !== "") {
+            process.env[key] = val;
+          }
         }
       }
     }
   } catch {}
 }
 
-export async function sendOtpEmail(toEmail: string, otp: string): Promise<{ success: boolean; simulated?: boolean; error?: string }> {
+function getSmtpConfig() {
   ensureEnvLoaded();
 
   const host = process.env.SMTP_HOST || "smtp.gmail.com";
@@ -32,7 +40,6 @@ export async function sendOtpEmail(toEmail: string, otp: string): Promise<{ succ
   const user = process.env.SMTP_USER || "clickudaan@gmail.com";
   let pass = process.env.SMTP_PASSWORD;
   if (pass) {
-    // Strip accidental spaces and quotes from password
     pass = pass.replace(/\s+/g, "");
     if ((pass.startsWith('"') && pass.endsWith('"')) || (pass.startsWith("'") && pass.endsWith("'"))) {
       pass = pass.slice(1, -1);
@@ -41,35 +48,43 @@ export async function sendOtpEmail(toEmail: string, otp: string): Promise<{ succ
   const fromEmail = process.env.SMTP_FROM_EMAIL || "clickudaan@gmail.com";
   const fromName = process.env.SMTP_FROM_NAME || "ClickUdaan";
 
-  // Safe SMTP Diagnostics (no secrets logged)
-  console.log(`[SMTP_DIAGNOSTIC] SMTP_HOST configured: ${host ? "YES (" + host + ")" : "NO"}`);
-  console.log(`[SMTP_DIAGNOSTIC] SMTP_PORT configured: ${port ? "YES (" + port + ")" : "NO"}`);
-  console.log(`[SMTP_DIAGNOSTIC] SMTP_USER configured: ${user ? "YES (" + user + ")" : "NO"}`);
-  console.log(`[SMTP_DIAGNOSTIC] SMTP_PASSWORD configured: ${pass && pass.length > 0 ? "YES" : "NO"}`);
-  console.log(`[SMTP_DIAGNOSTIC] SMTP_FROM_EMAIL configured: ${fromEmail ? "YES (" + fromEmail + ")" : "NO"}`);
+  return { host, port, user, pass, fromEmail, fromName };
+}
 
-  // Verify SMTP password exists without logging any secret
-  if (!pass || pass.trim() === "" || pass === "YOUR_GMAIL_APP_PASSWORD") {
-    console.error("[MAILER] SMTP_PASSWORD is not configured in environment. Email OTP cannot be sent.");
+function logSmtpDiagnostics(config: ReturnType<typeof getSmtpConfig>) {
+  // Safe SMTP diagnostics (never print secrets)
+  console.log(`[SMTP_DIAGNOSTIC] SMTP_HOST configured: ${Boolean(config.host)} (${config.host})`);
+  console.log(`[SMTP_DIAGNOSTIC] SMTP_PORT configured: ${Boolean(config.port)} (${config.port})`);
+  console.log(`[SMTP_DIAGNOSTIC] SMTP_USER configured: ${Boolean(config.user)} (${config.user})`);
+  console.log(`[SMTP_DIAGNOSTIC] SMTP_PASSWORD configured: ${Boolean(config.pass && config.pass.length > 0 && config.pass !== "YOUR_GMAIL_APP_PASSWORD")}`);
+  console.log(`[SMTP_DIAGNOSTIC] SMTP_FROM_EMAIL configured: ${Boolean(config.fromEmail)} (${config.fromEmail})`);
+}
+
+export async function sendOtpEmail(toEmail: string, otp: string): Promise<{ success: boolean; simulated?: boolean; error?: string }> {
+  const config = getSmtpConfig();
+  logSmtpDiagnostics(config);
+
+  if (!config.pass || config.pass.trim() === "" || config.pass === "YOUR_GMAIL_APP_PASSWORD") {
+    console.error("[MAILER] SMTP_PASSWORD is not configured in environment. Student OTP cannot be sent.");
     return { success: false, error: "SMTP service is not configured (missing SMTP_PASSWORD)" };
   }
 
   try {
     const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
+      host: config.host,
+      port: config.port,
+      secure: config.port === 465,
       auth: {
-        user,
-        pass,
+        user: config.user,
+        pass: config.pass,
       },
       tls: {
         rejectUnauthorized: false,
       },
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 8000,
     });
-
-    // Verify SMTP connection before sending
-    await transporter.verify();
 
     const html = `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 550px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
@@ -105,7 +120,7 @@ export async function sendOtpEmail(toEmail: string, otp: string): Promise<{ succ
     `;
 
     await transporter.sendMail({
-      from: `"${fromName}" <${fromEmail}>`,
+      from: `"${config.fromName}" <${config.fromEmail}>`,
       to: toEmail,
       subject: `Your ClickUdaan Student Portal Verification OTP: ${otp}`,
       html,
@@ -114,12 +129,12 @@ export async function sendOtpEmail(toEmail: string, otp: string): Promise<{ succ
 
     return { success: true };
   } catch (err: any) {
-    console.error("[MAILER_ERROR] Nodemailer error occurred:");
-    console.error(`- error.code: ${err.code || "N/A"}`);
-    console.error(`- error.command: ${err.command || "N/A"}`);
-    console.error(`- error.responseCode: ${err.responseCode || "N/A"}`);
-    console.error(`- error.response: ${err.response || "N/A"}`);
-    console.error(`- error.message: ${err.message || err}`);
+    console.error("[SMTP_ERROR] Student OTP email delivery failed:", {
+      code: err.code || "N/A",
+      command: err.command || "N/A",
+      responseCode: err.responseCode || "N/A",
+      message: err.message || String(err),
+    });
     return { success: false, error: err.message || "Failed to send email via SMTP" };
   }
 }
@@ -128,41 +143,30 @@ export async function sendAdminOtpEmail(
   toEmail: string,
   otp: string
 ): Promise<{ success: boolean; error?: string }> {
-  ensureEnvLoaded();
+  const config = getSmtpConfig();
+  logSmtpDiagnostics(config);
 
-  const host = process.env.SMTP_HOST || "smtp.gmail.com";
-  const port = parseInt(process.env.SMTP_PORT || "587", 10);
-  const user = process.env.SMTP_USER || "clickudaan@gmail.com";
-  let pass = process.env.SMTP_PASSWORD;
-  if (pass) {
-    pass = pass.replace(/\s+/g, "");
-    if ((pass.startsWith('"') && pass.endsWith('"')) || (pass.startsWith("'") && pass.endsWith("'"))) {
-      pass = pass.slice(1, -1);
-    }
-  }
-  const fromEmail = process.env.SMTP_FROM_EMAIL || "clickudaan@gmail.com";
-  const fromName = process.env.SMTP_FROM_NAME || "ClickUdaan";
-
-  if (!pass || pass.trim() === "" || pass === "YOUR_GMAIL_APP_PASSWORD") {
+  if (!config.pass || config.pass.trim() === "" || config.pass === "YOUR_GMAIL_APP_PASSWORD") {
     console.error("[MAILER] SMTP_PASSWORD is not configured in environment. Admin OTP cannot be sent.");
     return { success: false, error: "SMTP service is not configured (missing SMTP_PASSWORD)" };
   }
 
   try {
     const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
+      host: config.host,
+      port: config.port,
+      secure: config.port === 465,
       auth: {
-        user,
-        pass,
+        user: config.user,
+        pass: config.pass,
       },
       tls: {
         rejectUnauthorized: false,
       },
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 8000,
     });
-
-    await transporter.verify();
 
     const html = `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 550px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
@@ -198,7 +202,7 @@ export async function sendAdminOtpEmail(
     `;
 
     await transporter.sendMail({
-      from: `"${fromName}" <${fromEmail}>`,
+      from: `"${config.fromName}" <${config.fromEmail}>`,
       to: toEmail,
       subject: `ClickUdaan Admin Login OTP`,
       html,
@@ -207,12 +211,12 @@ export async function sendAdminOtpEmail(
 
     return { success: true };
   } catch (err: any) {
-    console.error("[MAILER_ERROR] Nodemailer error occurred sending admin OTP:");
-    console.error(`- error.code: ${err.code || "N/A"}`);
-    console.error(`- error.command: ${err.command || "N/A"}`);
-    console.error(`- error.responseCode: ${err.responseCode || "N/A"}`);
-    console.error(`- error.response: ${err.response || "N/A"}`);
-    console.error(`- error.message: ${err.message || err}`);
+    console.error("[SMTP_ERROR] Admin OTP email delivery failed:", {
+      code: err.code || "N/A",
+      command: err.command || "N/A",
+      responseCode: err.responseCode || "N/A",
+      message: err.message || String(err),
+    });
     return { success: false, error: err.message || "Failed to send email via SMTP" };
   }
 }
