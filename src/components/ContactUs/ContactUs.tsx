@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import './ContactUs.css';
+import { useGlobalSettings } from '../../hooks/useGlobalSettings';
 
 const ContactUs = () => {
+  const { settings } = useGlobalSettings();
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -73,43 +75,59 @@ const ContactUs = () => {
           <div className="contact-details">
             <div className="contact-detail">
               <span className="contact-icon">📧</span>
-              <span>hello@clickudaan.com</span>
+              <span>{settings.email || "hello@clickudaan.com"}</span>
             </div>
             <div className="contact-detail">
               <span className="contact-icon">📞</span>
-              <span>+91 85060 95853</span>
+              <span>{settings.phone || "+91 85060 95853"}</span>
             </div>
             <div className="contact-detail">
               <span className="contact-icon">📍</span>
-              <span>Iconic Tower, Sector-63, Noida, UP, India</span>
+              <span>{settings.address || "Iconic Tower, Sector-63, Noida, UP, India"}</span>
             </div>
           </div>
 
           <div className="contact-socials">
-            <a
-              href="https://www.instagram.com/clickudaan/"
-              className="social-link"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Instagram
-            </a>
-            <a
-              href="https://www.facebook.com/share/1AzKTrj6gD/"
-              className="social-link"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Facebook
-            </a>
-            <a
-              href="https://x.com/ClickUdaan"
-              className="social-link"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Twitter
-            </a>
+            {settings.instagram && (
+              <a
+                href={settings.instagram}
+                className="social-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Instagram
+              </a>
+            )}
+            {settings.facebook && (
+              <a
+                href={settings.facebook}
+                className="social-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Facebook
+              </a>
+            )}
+            {settings.twitter && (
+              <a
+                href={settings.twitter}
+                className="social-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Twitter
+              </a>
+            )}
+            {settings.linkedin && (
+              <a
+                href={settings.linkedin}
+                className="social-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LinkedIn
+              </a>
+            )}
           </div>
         </div>
 

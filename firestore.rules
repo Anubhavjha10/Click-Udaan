@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Verify if user is an authorized admin
+    function isAdmin() {
+      return request.auth != null &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+
+    // Certificates & Students: Admin only. Public verification is handled through the secure server API.
+    match /certificates/{certificateId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /students/{studentId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Team collection: Public can read active team members; Admin can write
+    match /team/{memberId} {
+      allow read: if resource.data.active == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Global settings: Public can read; Admin can write
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Admins collection: Authenticated user can read their own doc; Admin can write
+    match /admins/{uid} {
+      allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // Server-only OTP storage: Never accessible directly from client
+    match /otps/{otpId} {
+      allow read, write: if false;
+    }
+
+    // Default deny for all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

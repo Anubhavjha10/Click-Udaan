@@ -7,6 +7,7 @@ import 'react-phone-input-2/lib/style.css';
 
 import citySkylineImg from '../assets/city-skyline.png';
 import aiAssistantImg from '../assets/ai-assistant.png';
+import { useGlobalSettings } from '../hooks/useGlobalSettings';
 
 const availableServices = [
   'Social Media Marketing',
@@ -20,6 +21,7 @@ const availableServices = [
 ];
 
 const Contact: React.FC = () => {
+  const { settings } = useGlobalSettings();
   const [status, setStatus] = useState<'' | 'sending' | 'success' | 'error'>('');
   const [phone, setPhone] = useState('');
 
@@ -96,7 +98,7 @@ const Contact: React.FC = () => {
 
           <div className={styles.infoStack}>
             <a
-              href="https://www.google.com/maps/search/?api=1&query=Iconic+Tower+Sector+63+Noida+UP+India"
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.address || "Iconic Tower Sector 63 Noida UP India")}`}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.infoCardLink}
@@ -107,37 +109,37 @@ const Contact: React.FC = () => {
                 </div>
                 <div className={styles.cardContent}>
                   <h4>Address</h4>
-                  <p>Iconic Tower, Sector-63, Noida, India</p>
+                  <p>{settings.address || "Iconic Tower, Sector-63, Noida, India"}</p>
                 </div>
               </div>
             </a>
 
-            <a href="mailto:hello@clickudaan.com" className={styles.infoCardLink}>
+            <a href={`mailto:${settings.email || "hello@clickudaan.com"}`} className={styles.infoCardLink}>
               <div className={styles.infoCard}>
                 <div className={styles.iconWrapper}>
                   <Mail size={24} />
                 </div>
                 <div className={styles.cardContent}>
                   <h4>Email</h4>
-                  <p>hello@clickudaan.com</p>
+                  <p>{settings.email || "hello@clickudaan.com"}</p>
                 </div>
               </div>
             </a>
 
-            <a href="tel:+918506095853" className={styles.infoCardLink}>
+            <a href={`tel:${(settings.phone || "+918506095853").replace(/\s+/g, "")}`} className={styles.infoCardLink}>
               <div className={styles.infoCard}>
                 <div className={styles.iconWrapper}>
                   <Phone size={24} />
                 </div>
                 <div className={styles.cardContent}>
                   <h4>Phone</h4>
-                  <p>+91 85060 95853</p>
+                  <p>{settings.phone || "+91 85060 95853"}</p>
                 </div>
               </div>
             </a>
 
             <a
-              href="https://wa.me/918506095853?text=Hello%20ClickUdaan,%20I%20want%20a%20free%20strategy%20consultation%20for%20my%20business."
+              href={`https://wa.me/${(settings.whatsapp || "918506095853").replace(/\D/g, "")}?text=Hello%20ClickUdaan,%20I%20want%20a%20free%20strategy%20consultation%20for%20my%20business.`}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.infoCardLink}

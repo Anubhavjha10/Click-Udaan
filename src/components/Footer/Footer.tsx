@@ -1,8 +1,11 @@
 import './Footer.css';
 import { Link } from "react-router-dom";
-import logoImg from "../../assets/logoUddaan.png"
+import logoImg from "../../assets/logoUddaan.png";
+import { useGlobalSettings } from "../../hooks/useGlobalSettings";
 
 const Footer = () => {
+  const { settings } = useGlobalSettings();
+
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -12,7 +15,7 @@ const Footer = () => {
             <img src={logoImg} width="150px" height="95px" alt="ClickUdaan Logo" className="footer-logo-img" />
           </div>
 
-          <p className="footer-tagline">Where Clicks Take Flight</p>
+          <p className="footer-tagline">{settings.tagline || "Where Clicks Take Flight"}</p>
           <p className="footer-desc">
             Your trusted partner for digital marketing excellence. 
             Helping businesses grow through innovative strategies and data-driven solutions.
@@ -44,18 +47,19 @@ const Footer = () => {
             <li><Link to="/careers">Careers</Link></li>
             <li><Link to="/blog">Blog</Link></li>
             <li><Link to="/verify">Verify</Link></li>
+            <li><Link to="/admin">Admin Panel</Link></li>
           </ul>
         </div>
 
         <div className="footer-links-group">
           <h4 className="footer-heading">Contact</h4>
           <ul className="footer-links">
-            <a href="mailto:info@clickudaan.com">📧 info@clickudaan.com</a>
-            <a href="mailto:contact@clickudaan.in">📧 contact@clickudaan.in</a>
-            {/* <li>📞 +91 85060 95853</li> */}
-            <a href="tel:+918506095853">📞 +91 85060 95853</a>
-            <a href="https://maps.app.goo.gl/aNkYHFFp9rypmerc7" target='_blank'>📍 Iconic Tower, Sector- 63, Noida, UP, India</a>
-            {/* <li>📍 Iconic Tower, Sector- 63, Noida, UP, India</li> */}
+            <a href={`mailto:${settings.email || "info@clickudaan.com"}`}>📧 {settings.email || "info@clickudaan.com"}</a>
+            {settings.secondaryEmail && (
+              <a href={`mailto:${settings.secondaryEmail}`}>📧 {settings.secondaryEmail}</a>
+            )}
+            <a href={`tel:${(settings.phone || "+918506095853").replace(/\s+/g, "")}`}>📞 {settings.phone || "+91 85060 95853"}</a>
+            <a href="https://maps.app.goo.gl/aNkYHFFp9rypmerc7" target='_blank' rel="noopener noreferrer">📍 {settings.address || "Iconic Tower, Sector- 63, Noida, UP, India"}</a>
           </ul>
         </div>
       </div>

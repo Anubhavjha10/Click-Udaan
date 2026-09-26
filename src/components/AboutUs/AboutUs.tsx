@@ -2,31 +2,11 @@ import team1 from '@/assets/team-1.jpg';
 import team2 from '@/assets/team-2.jpg';
 import team3 from '@/assets/team-3.jpg';
 import './AboutUs.css';
-
-const team = [
-  {
-    name: 'Kumar Anubhav',
-    role: 'Founder & CEO',
-    desc: 'Leads company vision and growth strategies with strong business insight.'
-  },
-  {
-    name: 'Vivek Manishi',
-    role: 'Founder Vabit Digify Media Pvt Ltd',
-    desc: 'Leading ClickUdaan’s growth under Vabit Digify Media, delivering innovative digital solutions and business success.'
-  },
-  {
-    name: 'Ankur Jha',
-    role: 'Co-Founder & Director',
-    desc: 'Empowering ClickUdaan with leadership, creativity, and result-driven digital strategies.'
-  },
-  {
-    name: 'Ashish Shrivastava',
-    role: 'Co-founder Vabit Digify Media Pvt Ltd',
-    desc: 'Proud to partner with ClickUdaan, driving growth and digital success.'
-  },
-];
+import { usePublicTeam } from '../../hooks/useTeam';
 
 const AboutUs = () => {
+  const { members, loading, error } = usePublicTeam();
+
   return (
     <section className="about" id="about-us">
       <div className="about-container">
@@ -66,16 +46,32 @@ const AboutUs = () => {
 
         <div className="about-team">
           <h3 className="team-heading">Meet Our Team</h3>
-          <div className="team-grid">
-            {team.map((m) => (
-              <div key={m.name} className="team-card">
-                <span className="team-badge">ClickUdaan Team</span>
-                <h4 className="team-name">{m.name}</h4>
-                <p className="team-role">{m.role}</p>
-                <p className="team-desc">{m.desc}</p>
-              </div>
-            ))}
-          </div>
+          {loading && (
+            <p className="text-sm text-slate-400 py-4">Loading team members...</p>
+          )}
+          {!loading && error && (
+            <p className="text-xs text-rose-500 py-4 font-mono">Unable to load team: {error}</p>
+          )}
+          {!loading && !error && members.length === 0 && (
+            <p className="text-sm text-slate-400 py-4">No team members currently active.</p>
+          )}
+          {!loading && members.length > 0 && (
+            <div className="team-grid">
+              {members.map((m: any) => (
+                <div key={m.id || m.name} className="team-card">
+                  {m.imageUrl && (
+                    <div className="w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden border-2 border-amber-400">
+                      <img src={m.imageUrl} alt={m.name} className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <span className="team-badge">ClickUdaan Team</span>
+                  <h4 className="team-name">{m.name}</h4>
+                  <p className="team-role">{m.designation || m.role}</p>
+                  <p className="team-desc">{m.description || m.desc}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
