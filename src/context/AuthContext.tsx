@@ -5,8 +5,7 @@ import {
   signInWithEmailAndPassword,
   signOut as fbSignOut,
 } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "../lib/firebase";
+import { auth } from "../lib/firebase";
 import { AdminUser } from "../types/database";
 
 export type AuthStage =
@@ -45,6 +44,32 @@ const AuthContext = createContext<AuthContextType>({
 
 const SESSION_STORAGE_KEY = "admin_2fa_session";
 
+// Safe JSON fetch wrapper that never throws SyntaxError on non-JSON response
+async function safeFetchJson(url: string, options: RequestInit): Promise<{ ok: boolean; status: number; data: any }> {
+  try {
+    const res = await fetch(url, options);
+    let data: any = {};
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
+    } else {
+      const text = await res.text();
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { error: text || `Server error (${res.status})` };
+      }
+    }
+    return { ok: res.ok, status: res.status, data };
+  } catch (err: any) {
+    return { ok: false, status: 500, data: { error: err.message || "Network request failed" } };
+  }
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -54,58 +79,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [maskedEmail, setMaskedEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const verifyAdminInFirestore = async (firebaseUser: User | null): Promise<boolean> => {
-    if (!firebaseUser) {
-      setIsAdmin(false);
-      setAdminData(null);
-      return false;
-    }
-
-    try {
-      const adminDocRef = doc(db, "admins", firebaseUser.uid);
-      const snapshot = await getDoc(adminDocRef);
-
-      const exists = snapshot.exists();
-      const data = exists ? snapshot.data() : null;
-      const activeValue = data ? data.active : undefined;
-
-      // Safe diagnostic logging: ONLY authenticated user's UID, existence, and active value (NO secrets)
-      console.log(
-        `[ADMIN_AUTH_DIAGNOSTIC] UID: ${firebaseUser.uid} | admins/${firebaseUser.uid} exists: ${exists} | active: ${activeValue}`
-      );
-
-      if (exists && data && data.active === true) {
-        setIsAdmin(true);
-        setAdminData({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email || data.email,
-          active: true,
-          createdAt: data.createdAt,
-        });
-        return true;
-      }
-
-      setIsAdmin(false);
-      setAdminData(null);
-      return false;
-    } catch (err: any) {
-      console.error(
-        `[ADMIN_AUTH_DIAGNOSTIC] UID: ${firebaseUser.uid} | Error checking admins/${firebaseUser.uid}:`,
-        err.message || err
-      );
-      setIsAdmin(false);
-      setAdminData(null);
-      return false;
-    }
-  };
-
   const validateServerSession = async (firebaseUser: User): Promise<boolean> => {
     try {
       const sessionToken = sessionStorage.getItem(SESSION_STORAGE_KEY);
       if (!sessionToken) return false;
 
       const idToken = await firebaseUser.getIdToken();
-      const res = await fetch("/api/auth/admin-verify-session", {
+      const { ok, data } = await safeFetchJson("/api/auth/admin-verify-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -114,11 +94,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         body: JSON.stringify({ sessionToken }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        return Boolean(data.valid);
-      }
-      return false;
+      return ok && Boolean(data.valid);
     } catch {
       return false;
     }
@@ -128,28 +104,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        const isAuthorized = await verifyAdminInFirestore(currentUser);
-        if (isAuthorized) {
-          // Check if there is an active verified 2FA session
-          const hasValidSession = await validateServerSession(currentUser);
-          if (hasValidSession) {
-            setIsOtpVerified(true);
-            setAuthStage("ADMIN_AUTHENTICATED");
-          } else {
-            // Password authenticated, but OTP not completed for this session
-            sessionStorage.removeItem(SESSION_STORAGE_KEY);
-            setIsOtpVerified(false);
-            setAuthStage("OTP_PENDING");
-          }
+        // Any authenticated Firebase user is a CMS Admin account
+        setIsAdmin(true);
+        setAdminData({
+          uid: currentUser.uid,
+          email: currentUser.email || "",
+          active: true,
+        });
+
+        // Validate 2FA OTP session
+        const hasValidSession = await validateServerSession(currentUser);
+        if (hasValidSession) {
+          setIsOtpVerified(true);
+          setAuthStage("ADMIN_AUTHENTICATED");
         } else {
-          // Unauthorized user signed in -> sign out immediately
-          await fbSignOut(auth);
-          setUser(null);
-          setIsAdmin(false);
-          setAdminData(null);
-          setIsOtpVerified(false);
-          setAuthStage("UNAUTHENTICATED");
+          // Password authenticated, but OTP not completed for this session
           sessionStorage.removeItem(SESSION_STORAGE_KEY);
+          setIsOtpVerified(false);
+          setAuthStage("OTP_PENDING");
         }
       } else {
         setIsAdmin(false);
@@ -168,31 +140,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       const cred = await signInWithEmailAndPassword(auth, email.trim(), pass);
-      const isAuthorized = await verifyAdminInFirestore(cred.user);
-      if (!isAuthorized) {
-        await fbSignOut(auth);
-        setUser(null);
-        setIsAdmin(false);
-        setAdminData(null);
-        setIsOtpVerified(false);
-        setAuthStage("UNAUTHENTICATED");
-        sessionStorage.removeItem(SESSION_STORAGE_KEY);
-        throw new Error("Your account is not authorized to access the admin panel.");
-      }
-
+      setUser(cred.user);
+      setIsAdmin(true);
+      setAdminData({
+        uid: cred.user.uid,
+        email: cred.user.email || "",
+        active: true,
+      });
       setAuthStage("PASSWORD_AUTHENTICATED");
 
       // Trigger 2FA OTP generation and delivery on the server
       const idToken = await cred.user.getIdToken();
-      const res = await fetch("/api/auth/admin-send-otp", {
+      const { ok, data } = await safeFetchJson("/api/auth/admin-send-otp", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${idToken}`,
         },
       });
 
-      const data = await res.json();
-      if (!res.ok) {
+      if (!ok) {
         throw new Error(data.error || "Unable to send verification code. Please try again.");
       }
 
@@ -218,19 +184,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const idToken = await user.getIdToken();
-      const res = await fetch("/api/auth/admin-send-otp", {
+      const { ok, status, data } = await safeFetchJson("/api/auth/admin-send-otp", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${idToken}`,
         },
       });
 
-      const data = await res.json();
-      if (!res.ok) {
+      if (!ok) {
         return {
           success: false,
           error: data.error || "Unable to send verification code. Please try again.",
-          remainingSeconds: data.remainingSeconds,
+          remainingSeconds: status === 429 ? data.remainingSeconds : undefined,
         };
       }
 
@@ -251,7 +216,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const idToken = await user.getIdToken();
-      const res = await fetch("/api/auth/admin-verify-otp", {
+      const { ok, data } = await safeFetchJson("/api/auth/admin-verify-otp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -260,8 +225,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         body: JSON.stringify({ otp: otp.trim() }),
       });
 
-      const data = await res.json();
-      if (!res.ok) {
+      if (!ok) {
         return { success: false, error: data.error || "Invalid verification code." };
       }
 

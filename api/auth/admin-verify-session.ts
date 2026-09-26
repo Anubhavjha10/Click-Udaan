@@ -1,7 +1,9 @@
-import { getAdminAuth, getAdminFirestore } from "../_lib/firebaseAdmin";
+import { getAdminAuth } from "../_lib/firebaseAdmin";
 import { validateAdminSessionToken } from "../_lib/adminOtpStore";
 
 export default async function handler(req: any, res: any) {
+  res.setHeader("Content-Type", "application/json");
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed. Use POST." });
   }
@@ -18,9 +20,7 @@ export default async function handler(req: any, res: any) {
     }
 
     const adminAuth = getAdminAuth();
-    const adminDb = getAdminFirestore();
-
-    if (!adminAuth || !adminDb) {
+    if (!adminAuth) {
       return res.status(500).json({ valid: false, error: "Server credentials unconfigured." });
     }
 
@@ -32,11 +32,6 @@ export default async function handler(req: any, res: any) {
     }
 
     const uid = decodedToken.uid;
-
-    const adminDoc = await adminDb.collection("admins").doc(uid).get();
-    if (!adminDoc.exists || adminDoc.data()?.active !== true) {
-      return res.status(403).json({ valid: false, error: "Not an authorized admin." });
-    }
 
     let body = req.body;
     if (typeof body === "string") {

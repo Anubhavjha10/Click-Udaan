@@ -1,4 +1,4 @@
-import { getAdminAuth, getAdminFirestore } from "../_lib/firebaseAdmin";
+import { getAdminAuth } from "../_lib/firebaseAdmin";
 import {
   canSendAdminOTP,
   generateAdmin6DigitOTP,
@@ -8,6 +8,8 @@ import {
 import { sendAdminOtpEmail } from "../_lib/mailer";
 
 export default async function handler(req: any, res: any) {
+  res.setHeader("Content-Type", "application/json");
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed. Use POST." });
   }
@@ -24,9 +26,7 @@ export default async function handler(req: any, res: any) {
     }
 
     const adminAuth = getAdminAuth();
-    const adminDb = getAdminFirestore();
-
-    if (!adminAuth || !adminDb) {
+    if (!adminAuth) {
       console.error("[ADMIN_AUTH] Firebase Admin SDK is not properly initialized on the server.");
       return res.status(500).json({
         error: "Server authentication error: Firebase Admin credentials are not configured.",
@@ -53,16 +53,7 @@ export default async function handler(req: any, res: any) {
       });
     }
 
-    // 2. Verify admins/{uid} document exists and active == true
-    const adminDoc = await adminDb.collection("admins").doc(uid).get();
-    if (!adminDoc.exists || adminDoc.data()?.active !== true) {
-      console.warn(`[ADMIN_AUTH] Unauthorized access attempt: UID ${uid} is not an active admin.`);
-      return res.status(403).json({
-        error: "Your account is not authorized to access the admin panel.",
-      });
-    }
-
-    // 3. Check rate limit / resend cooldown (60 seconds)
+    // 2. Check rate limit / resend cooldown (60 seconds)
     const rateCheck = await canSendAdminOTP(uid);
     if (!rateCheck.allowed) {
       return res.status(429).json({
@@ -71,11 +62,11 @@ export default async function handler(req: any, res: any) {
       });
     }
 
-    // 4. Generate cryptographically secure 6-digit OTP and store hashed
+    // 3. Generate cryptographically secure 6-digit OTP and store hashed
     const otp = generateAdmin6DigitOTP();
     await saveAdminOTP(uid, email, otp);
 
-    // 5. Send OTP to the authenticated user's email ONLY
+    // 4. Send OTP to the authenticated Firebase user's email ONLY
     const emailResult = await sendAdminOtpEmail(email, otp);
     if (!emailResult.success) {
       console.error("[ADMIN_AUTH] Failed to send admin OTP email:", emailResult.error);
@@ -84,7 +75,7 @@ export default async function handler(req: any, res: any) {
       });
     }
 
-    console.log(`[ADMIN_AUTH] Sent admin OTP to ${maskEmail(email)} for UID ${uid}`);
+    console.log(`[ADMIN_AUTH] Sent admin OTP to ${maskEmail(email)} for Firebase user ${uid}`);
 
     return res.status(200).json({
       success: true,

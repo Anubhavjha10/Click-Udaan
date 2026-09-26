@@ -1,7 +1,9 @@
-import { getAdminAuth, getAdminFirestore } from "../_lib/firebaseAdmin";
+import { getAdminAuth } from "../_lib/firebaseAdmin";
 import { verifyAdminOTP, createAdminSessionToken } from "../_lib/adminOtpStore";
 
 export default async function handler(req: any, res: any) {
+  res.setHeader("Content-Type", "application/json");
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed. Use POST." });
   }
@@ -18,9 +20,7 @@ export default async function handler(req: any, res: any) {
     }
 
     const adminAuth = getAdminAuth();
-    const adminDb = getAdminFirestore();
-
-    if (!adminAuth || !adminDb) {
+    if (!adminAuth) {
       console.error("[ADMIN_AUTH] Firebase Admin SDK is not properly initialized on the server.");
       return res.status(500).json({
         error: "Server authentication error: Firebase Admin credentials are not configured.",
@@ -41,15 +41,7 @@ export default async function handler(req: any, res: any) {
     const uid = decodedToken.uid;
     const email = decodedToken.email;
 
-    // 2. Verify admins/{uid} document exists and active == true
-    const adminDoc = await adminDb.collection("admins").doc(uid).get();
-    if (!adminDoc.exists || adminDoc.data()?.active !== true) {
-      return res.status(403).json({
-        error: "Your account is not authorized to access the admin panel.",
-      });
-    }
-
-    // 3. Parse and validate OTP from request body
+    // 2. Parse and validate OTP from request body
     let body = req.body;
     if (typeof body === "string") {
       try {
@@ -64,7 +56,7 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: "Please enter a valid 6-digit OTP code." });
     }
 
-    // 4. Verify OTP against server store
+    // 3. Verify OTP against server store
     const result = await verifyAdminOTP(uid, otp.trim());
     if (!result.success) {
       return res.status(400).json({
@@ -73,10 +65,10 @@ export default async function handler(req: any, res: any) {
       });
     }
 
-    // 5. Generate secure HMAC-signed admin session token
-    const sessionToken = createAdminSessionToken(uid, email || adminDoc.data()?.email || "");
+    // 4. Generate secure HMAC-signed admin session token
+    const sessionToken = createAdminSessionToken(uid, email || "");
 
-    console.log(`[ADMIN_AUTH] Admin 2FA verified successfully for UID ${uid}`);
+    console.log(`[ADMIN_AUTH] Admin 2FA verified successfully for Firebase user ${uid}`);
 
     return res.status(200).json({
       success: true,

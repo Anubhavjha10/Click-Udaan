@@ -2,11 +2,9 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper: Verify if user is an authorized admin
+    // Helper: Verify if user is an authenticated Firebase user (Firebase Auth users are CMS Admins)
     function isAdmin() {
-      return request.auth != null &&
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+      return request.auth != null;
     }
 
     // Certificates & Students: Admin only. Public verification is handled through the secure server API.

@@ -30,13 +30,26 @@ export function devApiPlugin(): Plugin {
 
         // Attach res.status and res.json helpers matching Serverless Function signature
         const enhancedRes = res as any;
+        enhancedRes.setHeader = (name: string, value: string) => {
+          res.setHeader(name, value);
+          return enhancedRes;
+        };
         enhancedRes.status = (statusCode: number) => {
           enhancedRes.statusCode = statusCode;
           return enhancedRes;
         };
         enhancedRes.json = (data: any) => {
-          enhancedRes.setHeader("Content-Type", "application/json");
-          enhancedRes.end(JSON.stringify(data));
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify(data));
+          return enhancedRes;
+        };
+        enhancedRes.send = (data: any) => {
+          res.setHeader("Content-Type", "application/json");
+          if (typeof data === "object") {
+            res.end(JSON.stringify(data));
+          } else {
+            res.end(JSON.stringify({ message: String(data) }));
+          }
           return enhancedRes;
         };
 
