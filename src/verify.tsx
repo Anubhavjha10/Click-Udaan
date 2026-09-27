@@ -84,7 +84,12 @@ const CertificateVerification: React.FC = () => {
 
     try {
       const res = await fetch(`/api/certificates/verify?query=${encodeURIComponent(term)}`);
-      const data = await res.json();
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = { error: `Server error (${res.status}). Please try again later.` };
+      }
 
       if (res.ok && data.found && data.certificate) {
         setCertResult(data.certificate);
@@ -119,9 +124,14 @@ const CertificateVerification: React.FC = () => {
         body: JSON.stringify({ email: emailInput.trim() }),
       });
 
-      const data = await res.json();
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = { error: `Server error (${res.status}). Please try again later.` };
+      }
 
-      if (res.ok) {
+      if (res.ok && data.success !== false) {
         setOtpSent(true);
         setEmailMessage(data.message || "If an eligible account exists for this email, an OTP has been sent.");
         setCountdown(60); // 60 seconds cooldown
@@ -152,7 +162,12 @@ const CertificateVerification: React.FC = () => {
         }),
       });
 
-      const data = await res.json();
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = { error: `Server error (${res.status}). Please try again later.` };
+      }
 
       if (res.ok && data.token) {
         // Store verified credentials in session storage

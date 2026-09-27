@@ -50,11 +50,17 @@ const StudentPortal: React.FC = () => {
           },
         });
 
-        if (!res.ok) {
-          throw new Error("Session expired. Please verify your email again.");
+        let data: any = {};
+        try {
+          data = await res.json();
+        } catch {
+          data = {};
         }
 
-        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Session expired. Please verify your email again.");
+        }
+
         setRecords(data.records || []);
       } catch (err: any) {
         setError(err.message || "Failed to load student records.");

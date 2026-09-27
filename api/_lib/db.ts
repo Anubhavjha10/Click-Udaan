@@ -1,5 +1,25 @@
 import { getAdminFirestore } from "./firebaseAdmin";
 
+const FIRESTORE_QUERY_TIMEOUT_MS = 5000; // 5s timeout
+
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+  let timer: NodeJS.Timeout;
+  const timeoutPromise = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), ms);
+  });
+  return Promise.race([
+    promise.then((res) => {
+      clearTimeout(timer);
+      return res;
+    }),
+    timeoutPromise,
+  ]).catch((err) => {
+    clearTimeout(timer);
+    console.warn("[DB] Firestore query failed or timed out:", err?.message || err);
+    return null;
+  });
+}
+
 export interface StudentCertificateRecord {
   id: string;
   studentName: string;
@@ -40,12 +60,12 @@ export async function findStudentRecordsByEmail(
   }
 
   try {
-    const snapshot = await db
-      .collection("certificates")
-      .where("email", "==", normalized)
-      .get();
+    const snapshot = await withTimeout(
+      db.collection("certificates").where("email", "==", normalized).get(),
+      FIRESTORE_QUERY_TIMEOUT_MS
+    );
 
-    if (snapshot.empty) {
+    if (!snapshot || snapshot.empty) {
       return [];
     }
 
@@ -103,9 +123,9 @@ export async function findCertificateByIdOrNumber(
   try {
     // 1. Try direct document get by ID
     const docRef = db.collection("certificates").doc(q);
-    const docSnap = await docRef.get();
+    const docSnap = await withTimeout(docRef.get(), FIRESTORE_QUERY_TIMEOUT_MS);
 
-    if (docSnap.exists) {
+    if (docSnap && docSnap.exists) {
       const data = docSnap.data();
       if (data && data.active !== false) {
         return {
@@ -128,13 +148,12 @@ export async function findCertificateByIdOrNumber(
     }
 
     // 2. Query by certificateId
-    const byCertId = await db
-      .collection("certificates")
-      .where("certificateId", "==", q)
-      .limit(1)
-      .get();
+    const byCertId = await withTimeout(
+      db.collection("certificates").where("certificateId", "==", q).limit(1).get(),
+      FIRESTORE_QUERY_TIMEOUT_MS
+    );
 
-    if (!byCertId.empty) {
+    if (byCertId && !byCertId.empty) {
       const doc = byCertId.docs[0];
       const data = doc.data();
       if (data && data.active !== false) {
@@ -158,11 +177,10 @@ export async function findCertificateByIdOrNumber(
     }
 
     // 3. Query by verificationNumber
-    const byVerifNo = await db
-      .collection("certificates")
-      .where("verificationNumber", "==", q)
-      .limit(1)
-      .get();
+    const byVerifNo = await withTimeout(
+      db.collection("certificates").where("verificationNumber", "==", q).limit(1).get(),
+      FIRESTORE_QUERY_TIMEOUT_MS
+    );
 
     if (!byVerifNo.empty) {
       const doc = byVerifNo.docs[0];
